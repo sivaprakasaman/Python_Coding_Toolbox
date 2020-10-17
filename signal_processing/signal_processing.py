@@ -17,7 +17,7 @@
 
 ###############################################################################
 
-#DESCRIPTION: tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi)
+#DESCRIPTION: tone = pure_tone_complex(freq_Hz[], fs_Hz, dur_sec, amp[], phi[])
 #Outputs a tone with frequencies in array freq_Hz, with corresponding amplitdues/phases in amp/phi, and its time vector
 #REMEMBER! The output is an ARRAY, with tone[0] being a time vector, and tone[1] being the signal
 
@@ -65,8 +65,8 @@ def pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi):
 
 ################################################################################
 
-#DESCRIPTION: get_dft(sig[], Fs, nfft, type, sides)
-#Outputs a matrix with index 0 - frequency vector, 1 - fft, 2 - phase
+#DESCRIPTION: get_dft(sig[], Fs, nfft, type)
+#Outputs dft[0] - frequency vector, dft[1] - 2-sided fft, dft[2] - phase
 
 import numpy as np
 import matplotlib.pyplot as plt
