@@ -1,8 +1,8 @@
 #Written By: Andrew Sivaprakasam
 #Last Updated: October, 2020
 
-#DESCRIPTION: get_dft(sig[], Fs, nfft, type, sides)
-#Outputs a matrix with index 0 - frequency vector, 1 - fft, 2 - phase
+#DESCRIPTION: dft = get_dft(sig[], Fs, nfft, type, sides)
+#Outputs dft[0] - frequency vector, dft[1] - 2-sided fft, dft[2] - phase
 
 import numpy as np
 import matplotlib.pyplot as plt

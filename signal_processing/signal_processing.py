@@ -42,7 +42,7 @@ def pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi):
 # plt.plot(tone[0],tone[1])
 # plt.xlim(0,0.01)
 #
-# plt.show
+# plt.show()
 
 #sd.play(tone[1],fs_Hz)
 
@@ -53,7 +53,6 @@ def pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi):
 
 import numpy as np
 import matplotlib.pyplot as plt
-from tone_generator import pure_tone_complex
 
 def get_dft(sig, fs, nfft = 0, type = 'mag'):
 

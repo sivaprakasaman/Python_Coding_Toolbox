@@ -1,4 +1,4 @@
-from tone_generator import pure_tone_complex
+from signal_processing import pure_tone_complex, get_dft
 import matplotlib.pyplot as plt
 
 #%matplotlib inline
@@ -12,7 +12,13 @@ phi = [0,0];
 
 tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi)
 
+dft = get_dft(tone[1], fs_Hz)
+
+
 plt.plot(tone[0],tone[1])
 plt.xlim(0,0.05)
 
+plt.figure(2)
+plt.plot(dft[0],dft[1])
+plt.xlim([0,300])
 plt.show()
