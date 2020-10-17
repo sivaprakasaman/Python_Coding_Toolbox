@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 #%matplotlib inline
 #%matplotlib - use this or above to plot inline or in separate figure
 
-
 freq_Hz = [100,200];
 fs_Hz = 44e3;
 dur_sec = 1;
