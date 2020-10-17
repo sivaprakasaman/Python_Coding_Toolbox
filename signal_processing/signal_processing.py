@@ -1,9 +1,26 @@
 #Written By: Andrew Sivaprakasam
 #Last Updated: October, 2020
 
+#Here are the currently working scripts written in this folder. All un-verified
+#scripts have been worked out in the 'Sandbox' directory.
+
+#DEPENDENCIES (make sure to install these python packages):
+# -numpy
+# -matplotlib (only if you are plotting)
+
+
+#To implement these scripts in another script, make sure to have the 'signal_processing.py'
+#script in the directory, and call functions by importing from this file:
+
+#Example:
+#from signal_processing import pure_tone_complex, get_dft
+
+###############################################################################
+
 #DESCRIPTION: tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi)
 #Outputs a tone with frequencies in array freq_Hz, with corresponding amplitdues/phases in amp/phi, and its time vector
 #REMEMBER! The output is an ARRAY, with tone[0] being a time vector, and tone[1] being the signal
+
 
 #imports needed
 import numpy as np
