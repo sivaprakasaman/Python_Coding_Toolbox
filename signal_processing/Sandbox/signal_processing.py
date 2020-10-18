@@ -5,8 +5,9 @@
 #scripts have been worked out in the 'Sandbox' directory.
 
 #DEPENDENCIES (make sure to install these python packages):
-# -numpy
-# -matplotlib (only if you are plotting)
+# -numpy | pip install numpy
+# -scipy | pip install scipy
+# -matplotlib (only if you are plotting) | pip install matplotlib
 
 
 #To implement these scripts in another script, make sure to have the 'signal_processing.py'
@@ -18,6 +19,7 @@
 ###############################################################################
 
 #DESCRIPTION: tone = pure_tone_complex(freq_Hz[], fs_Hz, dur_sec, amp[], phi[])
+
 #Outputs a tone with frequencies in array freq_Hz, with corresponding amplitdues/phases in amp/phi, and its time vector
 #REMEMBER! The output is an ARRAY, with tone[0] being a time vector, and tone[1] being the signal
 
@@ -25,7 +27,6 @@
 #imports needed
 import numpy as np
 import matplotlib.pyplot as plt
-#import sounddevice as sd
 
 #Creating the Function:
 def pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi):
@@ -66,6 +67,7 @@ def pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi):
 ################################################################################
 
 #DESCRIPTION: get_dft(sig[], Fs, nfft, type)
+
 #Outputs dft[0] - frequency vector, dft[1] - 2-sided fft, dft[2] - phase
 
 import numpy as np
@@ -120,3 +122,55 @@ def get_dft(sig, fs, nfft = 0, type = 'mag'):
 # plt.figure(2)
 # plt.plot(tone[0],tone[1])
 # plt.xlim([0,1/freq_Hz[0]])
+
+###############################################################################
+#DESCRIPTION: sound(sig[], fs, fname (optional), savefile (optional))
+
+#Plays sig through computer audio output. Use 2 dimensions for sig if you want
+#stereo output, if 1 dimension, sound() assumes mono. fname is the filename you
+#to save as, (default = 'sound.wav'), savefile = 1 if you want to save the wav
+#file or savefile = 0 if you want it to autodelete
+
+import numpy as np
+import os
+from scipy.io.wavfile import write
+
+#sig should have one dim for mono or two dims for stereo dim = channel numbers
+def sound(sig, fs, fname = 'sound.wav', savefile = 0):
+
+    sigf32 = np.float32(sig)
+    fs = int(fs)
+
+    sigf32 = sigf32/np.max(sigf32)
+    write(fname,fs,sigf32.T)
+
+    pwd = os.getcwd()
+    wav_file = pwd + '/' + fname
+    os.system('aplay ' + fname)
+
+    if not savefile:
+        os.remove(fname)
+
+################################################################################
+
+#Implementation Example:
+
+# from signal_processing import pure_tone_complex
+#
+# f0 = 200;
+#
+# #Selected frequencies to generate a heavenly major chord with some spatial chara
+# cteristics
+#
+# freq_Hz = [f0,(5/4)*f0,(3/2)*f0];
+# freq_Hz2 = [5/4*f0,(3/2)*f0,5*f0];
+#
+# fs_Hz = 44e3;
+# dur_sec = 2;
+# amp = [2,10,6];
+# phi = [0,0,0];
+#
+# left = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi)
+# right = pure_tone_complex(freq_Hz2, fs_Hz, dur_sec, amp, phi)
+#
+# sound([left[1],right[1]],fs_Hz,'major_chord.wav',1)

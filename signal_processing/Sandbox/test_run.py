@@ -1,4 +1,4 @@
-from signal_processing import pure_tone_complex, get_dft
+from signal_processing import pure_tone_complex, get_dft, sound
 import matplotlib.pyplot as plt
 
 #%matplotlib inline
@@ -11,6 +11,8 @@ amp = [1,1];
 phi = [0,0];
 
 tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi)
+
+sound(tone,fs_Hz)
 
 dft = get_dft(tone[1], fs_Hz)
 

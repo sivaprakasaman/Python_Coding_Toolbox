@@ -1,12 +1,5 @@
-#Dependency: playsound
-# TODO: figure out why sound doesn't play in atom. Should work when run from terminal though
+#Dependency: scipy
 
-#sudo apt-get install python3-gi
-#sudo apt-get install -y python-gobject
-#sudo apt-get install pkg-config libcairo2-dev gcc python3-dev libgirepository1.0-dev
-#sudo apt install python3-gst-1.0
-
-#from playsound import playsound
 import numpy as np
 import os
 from scipy.io.wavfile import write
