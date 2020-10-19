@@ -1,3 +1,6 @@
+#Written By: Andrew Sivaprakasam
+#Last Updated: October, 2020
+
 import matplotlib.pyplot as plt
 import numpy as np
 from signal_processing import get_dft
@@ -23,12 +26,14 @@ def magphase(sig,fs,nfft = 0,type = 'mag', axis = 'linear', x_axislim = [0,0]):
     ax2.set_ylabel('Phase (Deg)')
     plt.xlabel('Frequency (Hz)')
 
-    ax1.set_title('Magnitude/Phase')
+    ax1.set_title('Magnitude/Phase' + ' - ' + type)
     plt.show()
 
     return fig, (ax1,ax2)
 
 ###############################################################################
+
+#Implemenation Example:
 
 from signal_processing import pure_tone_complex
 
