@@ -6,18 +6,17 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from tone_generator import pure_tone_complex
+from signal_processing import pure_tone_complex
 
 def get_dft(sig, fs, nfft = 0, type = 'mag'):
 
     if nfft < np.power(2,np.ceil(np.log2(len(sig)))):
         nfft = np.power(2,np.ceil(np.log2(len(sig))))
 
-    fft_c = np.fft.fft(sig,np.int(nfft))
+    fft_c = np.fft.fftshift(np.fft.fft(sig,np.int(nfft)))
     fft_n = np.absolute(fft_c)/fs
-    freq = np.fft.fftfreq(fft_n.size,1/fs)
+    freq = np.fft.fftshift(np.fft.fftfreq(fft_n.shape[-1],1/fs))
     phase = np.angle(fft_c, deg = True)
-
 
     if type == 'dB':
         fft_db = 20*(np.log10(fft_n))
@@ -26,7 +25,6 @@ def get_dft(sig, fs, nfft = 0, type = 'mag'):
         return [freq, fft_c, phase]
     else:
         return [freq, fft_n, phase]
-
 #Implementation of get_fft fxn
 
 #
