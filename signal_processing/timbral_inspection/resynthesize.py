@@ -49,7 +49,7 @@ import matplotlib.pyplot as plt
 
 harmonics = 6;
 
-extract = extract_harmonics('instruments/bassoon_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
+extract = extract_harmonics('instruments/trombone_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
 fs_Hz = extract[3];
 dur_sec = 2;
@@ -57,8 +57,13 @@ amp = extract[1];
 phi = np.zeros(harmonics);
 freq_Hz = extract[0];
 
-tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi)
-sound(tone[1],fs_Hz,'resynth.wav',1)
+tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sq')
+tone = tone[1]/np.max(tone[1]);
+tone = tone*.75
+plt.figure(2)
+plt.plot(tone);
+plt.xlim([0,4400])
+sound(tone,fs_Hz,'resynth.wav',1)
 
 ## TODO: Clean up plots, try to directly compare DFT to extracted harmonics
 

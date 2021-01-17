@@ -27,9 +27,10 @@
 #imports needed
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import signal
 
 #Creating the Function:
-def pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi):
+def pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi, type = 'sin'):
 
     samples = np.arange(0,fs_Hz*dur_sec)
     time_sec = samples/fs_Hz
@@ -38,7 +39,13 @@ def pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi):
     sig = [];
 
     for i in range(0,len(freq_Hz)):
-        sig_temp = amp[i]*np.sin(2*np.pi*freq_Hz[i]*time_sec + phi[i])
+        if type == 'sin':
+            sig_temp = amp[i]*np.sin(2*np.pi*freq_Hz[i]*time_sec + phi[i])
+        elif type == 'saw':
+            sig_temp = amp[i]*signal.sawtooth(2*np.pi*freq_Hz[i]*time_sec + phi[i])
+        elif type == 'sq':
+            sig_temp = amp[i]*signal.square(2*np.pi*freq_Hz[i]*time_sec + phi[i])
+
         sig_arr = np.array(sig_temp)
 
         if i == 0:
