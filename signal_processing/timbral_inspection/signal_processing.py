@@ -213,7 +213,7 @@ def magphase(sig,fs,nfft = 0,type = 'mag', axis = 'linear', x_axislim = [0,0]):
 
     return fig, (ax1,ax2)
 
-###############################################################################
+########################## IMPLEMENTATION #####################################
 
 #Implemenation Example:
 

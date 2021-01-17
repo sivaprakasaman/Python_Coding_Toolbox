@@ -5,8 +5,8 @@
 #DESCRIPTION: Code written to isolate the magnitudes of harmonics of a
 #given f_0 for a given audiofile/stimulus.
 
-#Additional Dependencies: librosa, numpy, matplotlib
-# pip3 install librosa
+#Additional Dependencies: scipy, numpy, matplotlib
+# pip3 install scipy
 # pip3 install numpy
 # pip3 install matplotlib
 
@@ -15,17 +15,17 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import librosa as lb
+from scipy.io import wavfile
 
 def extract_harmonics(fname, fs = 44100, f_0 = 440, n_harms = 3):
-    aud  = lb.load(fname,fs)
-    x = np.array(aud[0])
+    fs, x  = wavfile.read(fname)
+    #x = np.array(aud[0])
     t_vect = np.arange(0,len(x))/fs
     f_vect = np.arange(1,n_harms+1)*f_0;
     #plt.plot(t_vect,x)
 
-    ## TODO: Try applying dpss to this. Might result in more accurate 
-    ## magnitudes.
+    ## TODO: Try applying dpss to this. Might result in more accurate
+    ## magnitudes?
 
     freq_time = np.multiply(np.asmatrix(f_vect).T,np.asmatrix(t_vect))
     x_sin = np.multiply(np.asmatrix(x),np.sin(2*np.pi*freq_time))
@@ -38,30 +38,32 @@ def extract_harmonics(fname, fs = 44100, f_0 = 440, n_harms = 3):
     #plt.stem(f_vect,mags)
 
     return [f_vect, mags, x, fs]
-#############################################################################
-from signal_processing import pure_tone_complex, sound, get_dft
 
-harmonics = 12;
+########################## IMPLEMENTATION #####################################
 
-extract = extract_harmonics('instruments/cello_A4_normal.mp3', fs = 44100, f_0 = 440, n_harms = harmonics);
-plt.figure(0)
-plt.stem(extract[0],extract[1])
+from signal_processing import pure_tone_complex, sound, magphase
+import matplotlib.pyplot as plt
 
-plt.figure(1)
-dft = get_dft(extract[2],extract[3])
-fig, (ax1,ax2) = plt.subplots(2,1,sharex = True)
-ax1.plot(dft[0],dft[1]/np.max(dft[1]))
-ax2.plot(dft[2])
+#Can use the below line in Atom when running Hydrogen
+#%matplotlib inline
 
-plt.xlim([0,4500])
-plt.show()
+harmonics = 6;
 
+extract = extract_harmonics('instruments/bassoon_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
-fs_Hz = 44.1e3;
+fs_Hz = extract[3];
 dur_sec = 2;
 amp = extract[1];
 phi = np.zeros(harmonics);
 freq_Hz = extract[0];
 
 tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi)
-sound(tone,fs_Hz,'violin_resynth.wav',1)
+sound(tone[1],fs_Hz,'resynth.wav',1)
+
+## TODO: Clean up plots, try to directly compare DFT to extracted harmonics
+
+plt.figure(0)
+plt.stem(extract[0],extract[1])
+
+plt.figure(1)
+fig, (ax1,ax2) = magphase(extract[2],extract[3],x_axislim = [0,np.max(extract[0])])

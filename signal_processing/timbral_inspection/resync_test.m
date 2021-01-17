@@ -2,7 +2,6 @@
 %Purdue University
 %Email: asivapr@purdue.edu
 
-
 %Just code to verify my python function, lol. 
 %Still building confidence...
 
