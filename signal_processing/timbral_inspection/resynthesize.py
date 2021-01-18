@@ -39,6 +39,32 @@ def extract_harmonics(fname, fs = 44100, f_0 = 440, n_harms = 3):
 
     return [f_vect, mags, x, fs]
 
+
+from signal_processing import pure_tone_complex, sound, magphase
+import matplotlib.pyplot as plt
+from playsound import playsound
+
+def resynthesize(mags, fname = 'resynth.wav', scale = .75, env_fxn = 1, fs = 44100, dur_sec = 1, phi = [0], type = 'sin'):
+    harmonics = len(mags)
+
+    if len(phi)<harmonics:
+        phi = np.ones(harmonics)*phi;
+
+    tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sin')
+    #tone = tone[1]/np.max(tone[1]);
+    tone = tone[1]*env_fxn;
+    tone = scale*tone/np.max(tone);
+
+    t_vect = np.arange(0,len(tone))/fs_Hz;
+
+    plt.figure()
+    plt.plot(tone);
+    plt.xlim([0,len(tone)])
+    ## TODO: Check amplitude in this function, it is auto-normalizing for some odd reason
+    sound(tone,fs_Hz,fname,1)
+
+    return tone
+
 ########################## IMPLEMENTATION #####################################
 
 from signal_processing import pure_tone_complex, sound, magphase
@@ -49,26 +75,37 @@ import matplotlib.pyplot as plt
 
 harmonics = 6;
 
-extract = extract_harmonics('instruments/trombone_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
+extract = extract_harmonics('instruments/violin_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
 fs_Hz = extract[3];
-dur_sec = 2;
+dur_sec = 1;
 amp = extract[1];
 phi = np.zeros(harmonics);
 freq_Hz = extract[0];
+#print(extract[1])
+tone = resynthesize(extract[1], 'resynthesize2.wav', scale = .1)
 
-tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sq')
-tone = tone[1]/np.max(tone[1]);
-tone = tone*.75
-plt.figure(2)
-plt.plot(tone);
-plt.xlim([0,4400])
-sound(tone,fs_Hz,'resynth.wav',1)
+plt.figure()
+plt.plot(tone)
 
-## TODO: Clean up plots, try to directly compare DFT to extracted harmonics
+fs, x  = wavfile.read('resynthesize2.wav')
 
-plt.figure(0)
-plt.stem(extract[0],extract[1])
+plt.plot(x)
 
-plt.figure(1)
-fig, (ax1,ax2) = magphase(extract[2],extract[3],x_axislim = [0,np.max(extract[0])])
+# tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sin')
+# tone = tone[1]/np.max(tone[1]);
+# t_vect = np.arange(0,len(tone))/fs_Hz;
+# #tone = tone*np.exp(-9*np.arange(0,len(tone))/fs_Hz)
+# tone = tone*(1+.1*np.sin(7*np.pi*2*t_vect))
+# plt.figure(2)
+# plt.plot(tone);
+# plt.xlim([0,len(tone)])
+# sound(tone,fs_Hz,'resynth.wav',1)
+#
+# ## TODO: Clean up plots, try to directly compare DFT to extracted harmonics
+#
+# plt.figure(0)
+# plt.stem(extract[0],extract[1])
+#
+# plt.figure(1)
+# fig, (ax1,ax2) = magphase(extract[2],extract[3],x_axislim = [0,np.max(extract[0])])

@@ -147,13 +147,12 @@ def sound(sig, fs, fname = 'sound.wav', savefile = 0):
     sigf32 = np.float32(sig)
     fs = int(fs)
 
-    sigf32 = sigf32/np.max(sigf32)
+    #sigf32 = sigf32/np.max(sigf32)
     write(fname,fs,sigf32.T)
 
     pwd = os.getcwd()
     wav_file = pwd + '/' + fname
     os.system('aplay ' + fname)
-
     if not savefile:
         os.remove(fname)
 
