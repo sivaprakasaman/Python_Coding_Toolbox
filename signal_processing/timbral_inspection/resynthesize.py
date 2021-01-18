@@ -83,7 +83,7 @@ amp = extract[1];
 phi = np.zeros(harmonics);
 freq_Hz = extract[0];
 #print(extract[1])
-tone = resynthesize(extract[1], 'resynthesize2.wav', scale = .1)
+tone = resynthesize(extract[1], 'resynthesize2.wav', scale = .5)
 
 plt.figure()
 plt.plot(tone)
