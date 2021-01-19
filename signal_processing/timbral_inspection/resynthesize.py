@@ -44,27 +44,50 @@ from signal_processing import pure_tone_complex, sound, magphase
 import matplotlib.pyplot as plt
 from playsound import playsound
 
-def resynthesize(mags, fname = 'resynth.wav', scale = .75, env_fxn = 1, fs = 44100, dur_sec = 1, phi = [0], type = 'sin'):
+## TODO: Whoops need to properly pass these params
+def resynthesize(mags, fname = 'resynth.wav', freq_Hz = [0], dur_sec = 1, phi = [0], scale = .75, tone_shift = 1, env_fxn = 1, fs = 44100, type = 'sin', play_write = True, plot = True):
     harmonics = len(mags)
 
+    #This handling should be added to pure_tone_complex at some point
     if len(phi)<harmonics:
         phi = np.ones(harmonics)*phi;
 
-    tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sin')
-    #tone = tone[1]/np.max(tone[1]);
+    if len(freq_Hz) <harmonics:
+        freq_Hz = np.arange(1,n_harms+1)*440;
+
+    tone = pure_tone_complex(freq_Hz*tone_shift, fs, dur_sec, mags, phi, type)
     tone = tone[1]*env_fxn;
     tone = scale*tone/np.max(tone);
 
     t_vect = np.arange(0,len(tone))/fs_Hz;
 
-    plt.figure()
-    plt.plot(tone);
-    plt.xlim([0,len(tone)])
-    ## TODO: Check amplitude in this function, it is auto-normalizing for some odd reason
-    sound(tone,fs_Hz,fname,1)
+    if plot:
+        plt.figure()
+        plt.plot(tone);
+        plt.xlim([0,len(tone)])
+
+    if play_write:
+        sound(tone,fs_Hz,fname,1)
 
     return tone
 
+import numpy as np
+
+def play_alma_mater(mags, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  key = 1, env_fxn = 1, type = 'sin'):
+    shift_mat = [1.26/1.66, .85, .95, 1.00, 1.13, 1.26, 1.26, 1.32, 1.32, 1.32, 1, 1.13, 1.13, 1.26, 1.26/1.66, 1.26, 1.20, 1.26, 1.26, 1.13, 1.00, 1.13, 1.26, 1.26, 1.13, .85, .95, 1, .95, .85, 1.13, 1.26/1.66, 1.26/1.66, .85, .95, 1, 1.13, 1.26, 1.26, 1.26, 1.32, 1.32, 1, 1.13, 1.26, .85, .95, 1, .85, 1.26/1.66, 1, 1.26, 1.26/1.66, .85, 1.26, 1.13, 1, 1]
+    dur_mat = [2, 1, 1, 1.5, .5, 1, 1, 1, .5, .5, 1, .5, .5, 1, 1, 1, 1, 2, 1, 1, 1.5, .5, 1, 1, 1, .5, .5, 1, .5, .5, 3, 1.5, .5, 1, 1, 1.5, .5, 1, .5, .5, 1, 1, 1, 1, 3, 1.5, .5, 1, 1, 1, 1, 1, 1, 1.5, .5, 1.5, .5, 3]
+    scale_mat = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1 , 1, 1, 1, 1]
+
+    #Change tempo
+    dur_mat = np.asarray(dur_mat)*.2
+
+    tone = [];
+
+    for i in range(0,len(shift_mat)):
+        tone_temp = resynthesize(extract[1], freq_Hz  = key*freq_Hz, dur_sec = dur_mat[i], scale = scale_mat[i], tone_shift = shift_mat[i], env_fxn = env_fxn, type = type, play_write = True, plot = False)
+        np.concatenate((tone, tone_temp), axis = 0)
+
+    sound(tone, 44100, fname, 1)
 ########################## IMPLEMENTATION #####################################
 
 from signal_processing import pure_tone_complex, sound, magphase
@@ -75,7 +98,7 @@ import matplotlib.pyplot as plt
 
 harmonics = 6;
 
-extract = extract_harmonics('instruments/violin_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
+extract = extract_harmonics('instruments/bassoon_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
 fs_Hz = extract[3];
 dur_sec = 1;
@@ -83,14 +106,22 @@ amp = extract[1];
 phi = np.zeros(harmonics);
 freq_Hz = extract[0];
 #print(extract[1])
-tone = resynthesize(extract[1], 'resynthesize2.wav', scale = .5)
 
-plt.figure()
-plt.plot(tone)
+t_vect = np.arange(0,dur_sec*fs_Hz)/fs_Hz;
+env_banj = np.exp(-9*t_vect);
+env_string = (1+.1*np.sin(7*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
+
+#tone = resynthesize(extract[1], 'resynthesize2.wav', freq_Hz = freq_Hz, dur_sec = 1, scale = .5, tone_shift = 1, env_fxn = env_banj, type = 'saw', play_write = True)
+
+# plt.figure()
+# plt.plot(tone)
 
 fs, x  = wavfile.read('resynthesize2.wav')
 
 plt.plot(x)
+
+## TODO: get env function to pass through
+play_alma_mater(extract[1], freq_Hz, key = .94)
 
 # tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sin')
 # tone = tone[1]/np.max(tone[1]);
