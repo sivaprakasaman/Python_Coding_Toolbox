@@ -74,21 +74,32 @@ def resynthesize(mags, fname = 'resynth.wav', freq_Hz = [0], dur_sec = 1, phi = 
 ## TODO: get env function to pass through
 import numpy as np
 
-def play_alma_mater(mags, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  key = 1, env_fxn = 1, type = 'sin'):
+def play_alma_mater(mags, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  key = 1, tempo = 0.3, fxn = 'string', type = 'sin'):
     shift_mat = [1.26/1.66, .85, .95, 1.00, 1.13, 1.26, 1.26, 1.32, 1.32, 1.32, 1, 1.13, 1.13, 1.26, 1.26/1.66, 1.26, 1.20, 1.26, 1.26, 1.13, 1.00, 1.13, 1.26, 1.26, 1.13, .85, .95, 1, .95, .85, 1.13, 1.26/1.66, 1.26/1.66, .85, .95, 1, 1.13, 1.26, 1.26, 1.26, 1.32, 1.32, 1, 1.13, 1.26, .85, .95, 1, .85, 1.26/1.66, 1, 1.26, 1.26/1.66, .85, 1.26, 1.13, 1, 1]
-    dur_mat = [2, 1, 1, 1.5, .5, 1, 1, 1, .5, .5, 1, .5, .5, 1, 1, 1, 1, 2, 1, 1, 1.5, .5, 1, 1, 1, .5, .5, 1, .5, .5, 3, 1.5, .5, 1, 1, 1.5, .5, 1, .5, .5, 1, 1, 1, 1, 3, 1.5, .5, 1, 1, 1, 1, 1, 1, 1.5, .5, 1.5, .5, 3]
+    dur_mat = [2, 1, 1, 1.5, .5, 1, 1, 1, .5, .5, 1, .5, .5, 1, 1, 1, 1, 2, 1, 1, 1.5, .5, 1, 1, 1, .5, .5, 1, .5, .5, 3, 1.5, .5, 1, 1, 1.5, .5, 1, .5, .5, 1, 1, 1, 1, 4, 1.5, .5, 1, 1, 1, 1, 1, 1, 1.5, .5, 1.5, .5, 3]
     scale_mat = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1 , 1, 1, 1, 1]
 
+    fs = 44100;
     #Change tempo
-    dur_mat = np.asarray(dur_mat)*.3
+    dur_mat = np.asarray(dur_mat)*tempo
 
     tone = [];
 
     for i in range(0,len(shift_mat)):
+
+        t_vect = np.arange(0,dur_mat[i]*fs)/fs;
+
+        if fxn == 'banjo':
+            env_fxn = np.exp(-9*t_vect);
+        elif fxn == 'string':
+            env_fxn = (1+.15*np.sin(6*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
+        else:
+            env_fxn = 1;
+
         tone_temp = resynthesize(extract[1], freq_Hz  = key*freq_Hz, dur_sec = dur_mat[i], scale = scale_mat[i], tone_shift = shift_mat[i], env_fxn = env_fxn, type = type, play_write = False, plot = False)
         tone = np.concatenate((tone, tone_temp), axis = 0)
 
-    sound(tone, 44100, fname, 1)
+    sound(tone, fs, fname, 1)
 ########################## IMPLEMENTATION #####################################
 
 from signal_processing import pure_tone_complex, sound, magphase
@@ -117,11 +128,7 @@ env_string = (1+.1*np.sin(7*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
 # plt.figure()
 # plt.plot(tone)
 
-fs, x  = wavfile.read('resynthesize2.wav')
-
-plt.plot(x)
-
-play_alma_mater(extract[1], freq_Hz, key = .94)
+play_alma_mater(extract[1], freq_Hz, key = 1, fxn = 'string', type = 'sin')
 
 # tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sin')
 # tone = tone[1]/np.max(tone[1]);
