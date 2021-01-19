@@ -44,7 +44,6 @@ from signal_processing import pure_tone_complex, sound, magphase
 import matplotlib.pyplot as plt
 from playsound import playsound
 
-## TODO: Whoops need to properly pass these params
 def resynthesize(mags, fname = 'resynth.wav', freq_Hz = [0], dur_sec = 1, phi = [0], scale = .75, tone_shift = 1, env_fxn = 1, fs = 44100, type = 'sin', play_write = True, plot = True):
     harmonics = len(mags)
 
@@ -70,7 +69,9 @@ def resynthesize(mags, fname = 'resynth.wav', freq_Hz = [0], dur_sec = 1, phi = 
         sound(tone,fs_Hz,fname,1)
 
     return tone
+################################################################################
 
+## TODO: get env function to pass through
 import numpy as np
 
 def play_alma_mater(mags, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  key = 1, env_fxn = 1, type = 'sin'):
@@ -120,7 +121,6 @@ fs, x  = wavfile.read('resynthesize2.wav')
 
 plt.plot(x)
 
-## TODO: get env function to pass through
 play_alma_mater(extract[1], freq_Hz, key = .94)
 
 # tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sin')
