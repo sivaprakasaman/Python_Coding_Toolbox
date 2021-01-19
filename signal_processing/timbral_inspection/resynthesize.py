@@ -80,13 +80,13 @@ def play_alma_mater(mags, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  key =
     scale_mat = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1 , 1, 1, 1, 1]
 
     #Change tempo
-    dur_mat = np.asarray(dur_mat)*.2
+    dur_mat = np.asarray(dur_mat)*.3
 
     tone = [];
 
     for i in range(0,len(shift_mat)):
-        tone_temp = resynthesize(extract[1], freq_Hz  = key*freq_Hz, dur_sec = dur_mat[i], scale = scale_mat[i], tone_shift = shift_mat[i], env_fxn = env_fxn, type = type, play_write = True, plot = False)
-        np.concatenate((tone, tone_temp), axis = 0)
+        tone_temp = resynthesize(extract[1], freq_Hz  = key*freq_Hz, dur_sec = dur_mat[i], scale = scale_mat[i], tone_shift = shift_mat[i], env_fxn = env_fxn, type = type, play_write = False, plot = False)
+        tone = np.concatenate((tone, tone_temp), axis = 0)
 
     sound(tone, 44100, fname, 1)
 ########################## IMPLEMENTATION #####################################
