@@ -23,6 +23,7 @@ def extract_harmonics(fname, fs = 44100, f_0 = 440, n_harms = 3):
     t_vect = np.arange(0,len(x))/fs
     f_vect = np.arange(1,n_harms+1)*f_0;
     #plt.plot(t_vect,x)
+    #output = get_spect(x, fs_Hz, DR = 250, BW = 50, xlim = [0,0.5], ylim = [0,5000])
 
     ## TODO: Try applying dpss to this. Might result in more accurate
     ## magnitudes?
@@ -35,9 +36,13 @@ def extract_harmonics(fname, fs = 44100, f_0 = 440, n_harms = 3):
 
     mags = np.sqrt(np.multiply(sin_sum,sin_sum) + np.multiply(cos_sum,cos_sum))
     mags = np.squeeze(np.asarray(mags))/np.max(mags)
+
+    phase = np.arctan(np.divide(sin_sum,cos_sum));
+    phase = np.squeeze(np.asarray(phase));
+    #phase = [0];
     #plt.stem(f_vect,mags)
 
-    return [f_vect, mags, x, fs]
+    return [f_vect, mags, phase, x, fs]
 
 
 from signal_processing import pure_tone_complex, sound, magphase
@@ -74,7 +79,7 @@ def resynthesize(mags, fname = 'resynth.wav', freq_Hz = [0], dur_sec = 1, phi = 
 ## TODO: get env function to pass through
 import numpy as np
 
-def play_alma_mater(mags, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  key = 1, tempo = 0.3, fxn = 'string', type = 'sin'):
+def play_alma_mater(extract, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  key = 1, tempo = 0.3, fxn = 'string', type = 'sin'):
     shift_mat = [1.26/1.66, .85, .95, 1.00, 1.13, 1.26, 1.26, 1.32, 1.32, 1.32, 1, 1.13, 1.13, 1.26, 1.26/1.66, 1.26, 1.20, 1.26, 1.26, 1.13, 1.00, 1.13, 1.26, 1.26, 1.13, .85, .95, 1, .95, .85, 1.13, 1.26/1.66, 1.26/1.66, .85, .95, 1, 1.13, 1.26, 1.26, 1.26, 1.32, 1.32, 1, 1.13, 1.26, .85, .95, 1, .85, 1.26/1.66, 1, 1.26, 1.26/1.66, .85, 1.26, 1.13, 1, 1]
     dur_mat = [2, 1, 1, 1.5, .5, 1, 1, 1, .5, .5, 1, .5, .5, 1, 1, 1, 1, 2, 1, 1, 1.5, .5, 1, 1, 1, .5, .5, 1, .5, .5, 3, 1.5, .5, 1, 1, 1.5, .5, 1, .5, .5, 1, 1, 1, 1, 4, 1.5, .5, 1, 1, 1, 1, 1, 1, 1.5, .5, 1.5, .5, 3]
     scale_mat = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1 , 1, 1, 1, 1]
@@ -90,32 +95,35 @@ def play_alma_mater(mags, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  key =
         t_vect = np.arange(0,dur_mat[i]*fs)/fs;
 
         if fxn == 'banjo':
-            env_fxn = np.exp(-9*t_vect);
+            env_fxn = np.exp(-7*t_vect);
         elif fxn == 'string':
             env_fxn = (1+.15*np.sin(6*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
         else:
             env_fxn = 1;
 
-        tone_temp = resynthesize(extract[1], freq_Hz  = key*freq_Hz, dur_sec = dur_mat[i], scale = scale_mat[i], tone_shift = shift_mat[i], env_fxn = env_fxn, type = type, play_write = False, plot = False)
+        tone_temp = resynthesize(extract[1], freq_Hz  = key*freq_Hz, dur_sec = dur_mat[i], phi = extract[2], scale = scale_mat[i], tone_shift = shift_mat[i], env_fxn = env_fxn, type = type, play_write = False, plot = False)
+        print(tone_temp)
         tone = np.concatenate((tone, tone_temp), axis = 0)
 
     sound(tone, fs, fname, 1)
 ########################## IMPLEMENTATION #####################################
 
-from signal_processing import pure_tone_complex, sound, magphase
+from signal_processing import pure_tone_complex, sound, magphase, get_spect
 import matplotlib.pyplot as plt
+from scipy.signal import spectrogram as sp
 
 #Can use the below line in Atom when running Hydrogen
 #%matplotlib inline
 
-harmonics = 6;
+harmonics = 3;
 
-extract = extract_harmonics('instruments/bassoon_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
+extract = extract_harmonics('instruments/clarinet_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
-fs_Hz = extract[3];
+fs_Hz = extract[4];
 dur_sec = 1;
 amp = extract[1];
-phi = np.zeros(harmonics);
+phase = extract[2];
+#phi = np.zeros(harmonics);
 freq_Hz = extract[0];
 #print(extract[1])
 
@@ -123,12 +131,30 @@ t_vect = np.arange(0,dur_sec*fs_Hz)/fs_Hz;
 env_banj = np.exp(-9*t_vect);
 env_string = (1+.1*np.sin(7*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
 
-#tone = resynthesize(extract[1], 'resynthesize2.wav', freq_Hz = freq_Hz, dur_sec = 1, scale = .5, tone_shift = 1, env_fxn = env_banj, type = 'saw', play_write = True)
-
+tone = resynthesize(extract[1], 'resynthesize2.wav', freq_Hz = freq_Hz, dur_sec = 1, phi = phase, scale = .8, tone_shift = 1, env_fxn = env_string, type = 'sin', play_write = True, plot = True)
+# tone = np.concatenate((np.zeros(round(.1*fs_Hz)), np.asarray(tone)), axis = 0);
 # plt.figure()
 # plt.plot(tone)
+# output = get_spect(tone, fs_Hz, DR = 250, BW = 50, xlim = [0,0.5], ylim = [0,5000])
+sound(tone, fs_Hz)
 
-play_alma_mater(extract[1], freq_Hz, key = 1, fxn = 'string', type = 'sin')
+#play_alma_mater(extract[1], freq_Hz, key = 1, fxn = 'string', type = 'sin')
+
+#
+# fs, x  = wavfile.read('alma_mater.wav');
+
+# plt.figure();
+# plt.plot(x);
+# plt.show();
+
+#
+# sound(tone,fs_Hz,'resynth.wav',1)
+#
+# plt.figure()
+# plt.plot(tone)
+#print(extract[2])
+#play_alma_mater(extract, freq_Hz, key = 1, fxn = 'string', type = 'sin')
+
 
 # tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi,'sin')
 # tone = tone[1]/np.max(tone[1]);

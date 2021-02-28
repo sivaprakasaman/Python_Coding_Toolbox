@@ -1,5 +1,0 @@
-addpath 'instruments'
-[x,fs] = audioread('violin_A4_normal.mp3');
-
-t_vect = (1:length(x))/fs;
-f_vect = 
