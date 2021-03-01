@@ -23,7 +23,7 @@ def extract_harmonics(fname, fs = 44100, f_0 = 440, n_harms = 3):
     t_vect = np.arange(0,len(x))/fs
     f_vect = np.arange(1,n_harms+1)*f_0;
     #plt.plot(t_vect,x)
-    output = get_spect(x, fs_Hz, DR = 250, BW = 50, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
+    output = get_spect(x, fs, DR = 300, BW = 50, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
 
     ## TODO: Try applying dpss to this. Might result in more accurate
     ## magnitudes?
@@ -125,7 +125,7 @@ from scipy.signal import spectrogram as sp
 
 harmonics = 15;
 
-extract = extract_harmonics('instruments/violin_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
+extract = extract_harmonics('instruments/oboe_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
 fs_Hz = extract[4];
 dur_sec = 1;
@@ -140,7 +140,7 @@ env_string = (1+.5*np.sin(5*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
 tone = resynthesize(extract[1], 'resynthesize2.wav', freq_Hz = freq_Hz, dur_sec = 1, phi = phase, scale = .8, tone_shift = 1, env_fxn = env_string, type = 'sin', play_write = True, plot = False)
 
 sound(tone, fs_Hz)
-output = get_spect(tone, fs_Hz, DR = 300, BW = 200, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
+output = get_spect(tone, fs_Hz, DR = 300, BW = 100, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
 
 # #Play Alma Mater
 # alma_mater = play_alma_mater(extract, freq_Hz, key = 1, fxn = 'string', type = 'sin')
