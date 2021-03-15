@@ -123,24 +123,25 @@ from scipy.signal import spectrogram as sp
 #Can use the below line in Atom when running Hydrogen
 #%matplotlib inline
 
-harmonics = 15;
+harmonics = 7;
+first = 5;
+dur_sec = 1;
 
-extract = extract_harmonics('instruments/oboe_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
+extract = extract_harmonics('instruments/violin_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
 fs_Hz = extract[4];
-dur_sec = 1;
-amp = extract[1];
-phase = extract[2];
-freq_Hz = extract[0];
+amp = extract[1][first:];
+phase = extract[2][first:];
+freq_Hz = extract[0][first:];
 
 t_vect = np.arange(0,dur_sec*fs_Hz)/fs_Hz;
 env_banj = np.exp(-9*t_vect);
 env_string = (1+.5*np.sin(5*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
 
-tone = resynthesize(extract[1], 'resynthesize2.wav', freq_Hz = freq_Hz, dur_sec = 1, phi = phase, scale = .8, tone_shift = 1, env_fxn = env_string, type = 'sin', play_write = True, plot = False)
+tone = resynthesize(amp, 'resynthesize2.wav', freq_Hz = freq_Hz, dur_sec = 1, phi = phase, scale = 1, tone_shift = 1, env_fxn = env_string, type = 'sin', play_write = True, plot = False)
 
 sound(tone, fs_Hz)
-output = get_spect(tone, fs_Hz, DR = 300, BW = 100, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
+get_spect(tone, fs_Hz, DR = 300, BW = 100, xlim = [0,1], ylim = [0,5000], colormap = 'magma');
 
 # #Play Alma Mater
 # alma_mater = play_alma_mater(extract, freq_Hz, key = 1, fxn = 'string', type = 'sin')
