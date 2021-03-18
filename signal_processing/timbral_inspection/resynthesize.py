@@ -23,7 +23,7 @@ def extract_harmonics(fname, fs = 44100, f_0 = 440, n_harms = 3):
     t_vect = np.arange(0,len(x))/fs
     f_vect = np.arange(1,n_harms+1)*f_0;
     #plt.plot(t_vect,x)
-    output = get_spect(x, fs, DR = 300, BW = 50, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
+    # output = get_spect(x, fs, DR = 120, BW = 100, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
 
     ## TODO: Try applying dpss to this. Might result in more accurate
     ## magnitudes?
@@ -100,7 +100,7 @@ def play_alma_mater(extract, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  ke
         if fxn == 'banjo':
             env_fxn = np.exp(-7*t_vect);
         elif fxn == 'string':
-            env_fxn = (1+.15*np.sin(6*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
+            env_fxn = (1+.5*np.sin(2*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
         else:
             env_fxn = 1;
 
@@ -117,34 +117,34 @@ def play_alma_mater(extract, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  ke
 from signal_processing import pure_tone_complex, sound, magphase, get_spect
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram as sp
-
+import numpy as np
 ## TODO: Quantify Envelope, apply slepian sequences, verify magnitudes against DFT/PSD
 
 #Can use the below line in Atom when running Hydrogen
 #%matplotlib inline
 
 harmonics = 7;
-first = 5;
+first = 0;
 dur_sec = 1;
-
-extract = extract_harmonics('instruments/violin_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
+toPlay = np.array([0,1,2,3,4,5,6])
+extract = extract_harmonics('instruments/oboe_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
 fs_Hz = extract[4];
-amp = extract[1][first:];
-phase = extract[2][first:];
-freq_Hz = extract[0][first:];
+amp = extract[1][toPlay];
+phase = extract[2][toPlay];
+freq_Hz = extract[0][toPlay];
 
 t_vect = np.arange(0,dur_sec*fs_Hz)/fs_Hz;
 env_banj = np.exp(-9*t_vect);
-env_string = (1+.5*np.sin(5*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
+env_string = (1+0.25*np.sin(5*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
 
 tone = resynthesize(amp, 'resynthesize2.wav', freq_Hz = freq_Hz, dur_sec = 1, phi = phase, scale = 1, tone_shift = 1, env_fxn = env_string, type = 'sin', play_write = True, plot = False)
 
 sound(tone, fs_Hz)
-get_spect(tone, fs_Hz, DR = 300, BW = 100, xlim = [0,1], ylim = [0,5000], colormap = 'magma');
+get_spect(tone, fs_Hz, DR = 220, BW = 80, xlim = [0,1], ylim = [0,4000], colormap = 'cividis');
 
 # #Play Alma Mater
-# alma_mater = play_alma_mater(extract, freq_Hz, key = 1, fxn = 'string', type = 'sin')
+# alma_mater = play_alma_mater(extract, freq_Hz, key = 1, fxn = 'strings', type = 'sin')
 #
 # plt.figure()
 # plt.plot(np.arange(0,len(alma_mater[0]))/alma_mater[1],alma_mater[0]);
