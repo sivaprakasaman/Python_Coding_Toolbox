@@ -100,7 +100,7 @@ def play_alma_mater(extract, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  ke
         if fxn == 'banjo':
             env_fxn = np.exp(-7*t_vect);
         elif fxn == 'string':
-            env_fxn = (1+.5*np.sin(2*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
+            env_fxn = (1+.25*np.sin(5*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
         else:
             env_fxn = 1;
 
@@ -127,7 +127,7 @@ harmonics = 7;
 first = 0;
 dur_sec = 1;
 toPlay = np.array([0,1,2,3,4,5,6])
-extract = extract_harmonics('instruments/oboe_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
+extract = extract_harmonics('instruments/violin_A4_normal.wav', fs = 44100, f_0 = 440, n_harms = harmonics);
 
 fs_Hz = extract[4];
 amp = extract[1][toPlay];
@@ -136,12 +136,12 @@ freq_Hz = extract[0][toPlay];
 
 t_vect = np.arange(0,dur_sec*fs_Hz)/fs_Hz;
 env_banj = np.exp(-9*t_vect);
-env_string = (1+0.25*np.sin(5*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
+env_string = (1+0.15*np.sin(6*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
 
-tone = resynthesize(amp, 'resynthesize2.wav', freq_Hz = freq_Hz, dur_sec = 1, phi = phase, scale = 1, tone_shift = 1, env_fxn = env_string, type = 'sin', play_write = True, plot = False)
+tone = resynthesize(amp, 'violin_all.wav', freq_Hz = freq_Hz, dur_sec = 1, phi = phase, scale = 1, tone_shift = 1, env_fxn = env_string, type = 'sin', play_write = True, plot = False)
 
 sound(tone, fs_Hz)
-get_spect(tone, fs_Hz, DR = 220, BW = 80, xlim = [0,1], ylim = [0,4000], colormap = 'cividis');
+get_spect(tone, fs_Hz, DR = 200, BW = 75, xlim = [0,1], ylim = [0,4000], colormap = 'cividis',title = 'Simulated Violin | All Harmonics');
 
 # #Play Alma Mater
 # alma_mater = play_alma_mater(extract, freq_Hz, key = 1, fxn = 'strings', type = 'sin')
