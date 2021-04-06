@@ -23,7 +23,7 @@ def extract_harmonics(fname, fs = 44100, f_0 = 440, n_harms = 3):
     t_vect = np.arange(0,len(x))/fs
     f_vect = np.arange(1,n_harms+1)*f_0;
     #plt.plot(t_vect,x)
-    # output = get_spect(x, fs, DR = 120, BW = 100, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
+    #output = get_spect(x, fs, DR = 120, BW = 100, xlim = [0,0.5], ylim = [0,5000], colormap = 'magma')
 
     ## TODO: Try applying dpss to this. Might result in more accurate
     ## magnitudes?
