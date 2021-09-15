@@ -193,7 +193,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from signal_processing import get_dft
 
-def plt_dft(sig,fs,nfft = 0,scale = 'mag', axis = 'linear', x_axislim = [0,0], phase_on = False, title = 'DFT'):
+def magphase(sig,fs,nfft = 0,type = 'mag', axis = 'linear', x_axislim = [0,0]):
 
     if x_axislim[1]-x_axislim[0] <= 0:
         x_axislim[0] = -fs/2
@@ -201,35 +201,23 @@ def plt_dft(sig,fs,nfft = 0,scale = 'mag', axis = 'linear', x_axislim = [0,0], p
 
     dft = get_dft(sig,fs,nfft,type)
 
-    
-    if phase_on:
-        fig, axs = plt.subplots(2,1,sharex = True)
-        (ax1,ax2) = axs;
-    else:
-        fig, axs = plt.subplots(1,1)
-        ax1 = axs;
-        
-    if scale == 'log':
+    fig, (ax1,ax2) = plt.subplots(2,1,sharex = True)
+    if axis == 'log':
         ax1.semilogx(dft[0],dft[1])
-        
-        if phase_on:
-            ax2.semilogx(dft[0],dft[2])
+        ax2.semilogx(dft[0],dft[2])
     else:
         ax1.plot((dft[0]),dft[1])
-        
-        if phase_on:
-            ax2.plot(dft[0],dft[2])
+        ax2.plot(dft[0],dft[2])
 
     ax1.set_xlim([x_axislim[0],x_axislim[1]])
     ax1.set_ylabel('Magnitude')
-    if phase_on:
-        ax2.set_ylabel('Phase (Deg)')
-    
+    ax2.set_ylabel('Phase (Deg)')
     plt.xlabel('Frequency (Hz)')
-    ax1.set_title(title)
+
+    ax1.set_title('Magnitude/Phase' + ' - ' + type)
     plt.show()
 
-    return fig, axs
+    return fig, (ax1,ax2)
 
 ########################## IMPLEMENTATION #####################################
 
@@ -243,7 +231,7 @@ def plt_dft(sig,fs,nfft = 0,scale = 'mag', axis = 'linear', x_axislim = [0,0], p
 # amp = [1,2];
 # phi = [0,0];
 # tone = pure_tone_complex(freq_Hz, fs_Hz, dur_sec, amp, phi)
-# fig, (ax1,ax2) = plt_dft(tone[1], fs_Hz, x_axislim = [0,400])
+# fig, (ax1,ax2) = magphase(tone[1], fs_Hz, x_axislim = [0,400])
 
 ###############################################################################
 #DESCRIPTION: def get_spect(sig, Fs, BW = 0, DR = 0, ylim = [], xlim = [], Window = 'hamming', shading = 'goraud', colormap = 'viridis', title = 'Spectrogram', ytitle = 'Frequency (Hz)', xtitle = 'Time (s)'):
