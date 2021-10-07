@@ -245,7 +245,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import spectrogram as sp
 
-def get_spect(sig, Fs, BW = 25, DR = 30, ylim = [], xlim = [], Window = 'hamming', shading = 'goraud', colormap = 'viridis', title = 'Spectrogram', ytitle = 'Frequency (Hz)', xtitle = 'Time (s)'):
+def get_spect(sig, Fs, BW = 25, DR = 30, ylim = [], xlim = [], Window = 'hamming', shading = 'goraud', colormap = 'viridis', title = 'Spectrogram', ytitle = 'Frequency (Hz)', xtitle = 'Time (s)', save = False):
 
     Nwindow = np.round(4*Fs/BW);
     PercentOverlap = 90;
@@ -271,7 +271,12 @@ def get_spect(sig, Fs, BW = 25, DR = 30, ylim = [], xlim = [], Window = 'hamming
     plt.title(title)
     plt.ylabel(ytitle)
     plt.xlabel(xtitle)
+       
+    if save:
+        plt.savefig(title+'.png', dpi=300)
+        
     plt.show()
+ 
 
     return [t,f,Sgram_dB];
 ##########################IMPLEMENTATION:######################################
