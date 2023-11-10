@@ -56,7 +56,7 @@ def resynthesize(mags, fname = 'resynth.wav', fs_Hz = 44100, freq_Hz = [0], dur_
         phi = np.ones(harmonics)*phi;
 
     if len(freq_Hz) <harmonics:
-        freq_Hz = np.arange(1,n_harms+1)*440;
+        freq_Hz = np.arange(1,harmonics+1)*440;
 
     tone = pure_tone_complex(freq_Hz*tone_shift, fs, dur_sec, mags, phi, type)
     tone = tone[1]*env_fxn;
