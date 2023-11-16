@@ -57,8 +57,9 @@ def resynthesize(mags, fname = 'resynth.wav', fs_Hz = 44100, freq_Hz = [0], dur_
 
     if len(freq_Hz) <harmonics:
         freq_Hz = np.arange(1,harmonics+1)*440;
+        print(harmonics)
 
-    tone = pure_tone_complex(freq_Hz*tone_shift, fs, dur_sec, mags, phi, type)
+    tone = pure_tone_complex(freq_Hz*tone_shift, fs, dur_sec, mags, phi, type);
     tone = tone[1]*env_fxn;
     tone = scale*tone/np.max(tone);
 
@@ -103,10 +104,10 @@ def play_alma_mater(extract, freq_Hz, fname = 'alma_mater.wav', n_harms = 6,  ke
             env_fxn = (1+.25*np.sin(5*np.pi*2*t_vect))*np.sin(.5*np.pi*2*t_vect);
         else:
             env_fxn = 1;
-
-        tone_temp = resynthesize(extract[1], freq_Hz  = key*freq_Hz, dur_sec = dur_mat[i], phi = extract[2], scale = scale_mat[i], tone_shift = shift_mat[i], env_fxn = env_fxn, type = type, play_write = False, plot = False)
+        
+        tone_temp = resynthesize(extract[1], freq_Hz  = key*freq_Hz, dur_sec = dur_mat[i], phi = extract[2], scale = scale_mat[i], tone_shift = shift_mat[i], env_fxn = env_fxn, type = type, play_write = False, plot = False);
         print(tone_temp)
-        tone = np.concatenate((tone,tone_temp), axis = 0)
+        tone = np.concatenate((tone,tone_temp), axis = 0);
 
     sound(tone, fs, fname, 1)
 
